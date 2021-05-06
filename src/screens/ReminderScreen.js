@@ -38,7 +38,7 @@ const findme = db.collection('Findme');
 
 
 const VitalScreen = () => {
-
+  const [allfences, setAllFences] = React.useState([{name:'',fence:{latitude:0,longitude:0}}]);
   const [fences, setFences] = useState(null)
   const [name, setName] = React.useState(null);
   const [track, setTrack] = React.useState(false);
@@ -46,11 +46,12 @@ const VitalScreen = () => {
   const [stopTracking, setStopTracking] = React.useState(false);
   const [disableTracker, setDisableTracker] = React.useState(true);
 
-  
   async function readFence() {
     const data=await findme.get();
+    setAllFences( data.docs);
     data.docs.forEach(item=>{ 
       const fenceData =(item.data().fenceA);
+     
       console.log("-------------------getting fence data-------------------"+JSON.stringify(fenceData));
       const geo = JSON.parse(fenceData);
       if(geo.tracker.includes(name)){
@@ -120,10 +121,10 @@ const VitalScreen = () => {
   
         let inside = false
         for (let i = 0, j = polygonArray.length - 1; i < polygonArray.length; j = i++) {
-          let xLat = polygonArray[i].lat
-          let yLat = polygonArray[i].lng
-          let xLon = polygonArray[j].lat
-          let yLon = polygonArray[j].lng
+          let xLat = polygonArray[i].latitude
+          let yLat = polygonArray[i].longitude
+          let xLon = polygonArray[j].latitude
+          let yLon = polygonArray[j].longitude
   
           let intersect = ((yLat > y) !== (yLon > y)) && (x < (xLon - xLat) * (y - yLat) / (yLon - yLat) + xLat)
           if (intersect) inside = !inside
@@ -133,7 +134,7 @@ const VitalScreen = () => {
         const today = new Date();
         const positions = { lat: position.coords.latitude, lon: position.coords.longitude };
         console.log("-----name---------"+name);
-
+        if(inside){
           /*  firebase.firestore()
             .collection('TrackHistory')
             .add({today,positions,name})
@@ -149,6 +150,13 @@ const VitalScreen = () => {
               console.log('Data added!');
             });
         //alert(inside);
+          }else{
+            const db = firebase.firestore();
+            var cityRef = db.collection('TrackerData').doc(name);
+            var removeCapital = cityRef.update({
+                capital: firebase.firestore.FieldValue.delete()
+            });
+          }
     
       },
       (error) => alert(error.message),
