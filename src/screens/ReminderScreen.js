@@ -40,73 +40,80 @@ const findme = db.collection('Findme');
 const VitalScreen = () => {
   const [allfences, setAllFences] = React.useState([{name:'',fence:{latitude:0,longitude:0}}]);
   const [fences, setFences] = useState(null)
+  const [trackStatus, setTrackStatus] = useState(null)
   const [name, setName] = React.useState(null);
   const [track, setTrack] = React.useState(false);
   const [startTracking, setStartTracking] = React.useState(false);
   const [stopTracking, setStopTracking] = React.useState(false);
   const [disableTracker, setDisableTracker] = React.useState(true);
-
+//-------------------------------------------------------------------------------------------------------------------------
   async function readFence() {
     const data=await findme.get();
     setAllFences( data.docs);
+    var trackerfound=false;
     data.docs.forEach(item=>{ 
-      const fenceData =(item.data().fenceA);
+      const fenceData =(item.data().fenceA);     
      
-      console.log("-------------------getting fence data-------------------"+JSON.stringify(fenceData));
       const geo = JSON.parse(fenceData);
-      if(geo.tracker.includes(name)){
+      console.log("-------------------getting fence data-------------------"+JSON.stringify(geo));
+      //console.log("-------------------getting fence data-------------------"+JSON.stringify(geo.tracker));
+      //console.log("-------------------getting fence data-------------------"+JSON.stringify(name));
+      if(geo.tracker.includes(name.trim())){
         console.log("-------------------Tracker Added------------------"+name);
         //alert('true');
-        storage.save({ key: 'fen',data:geo,expires: 1000 * 3600});    
+        storage.save({ key: 'fence',data:geo.fence,expires: 1000 * 360000});    
         setDisableTracker(false);  
-      }     
+        trackerfound=true;
+      } 
     })
+    if(!trackerfound){
+      setTrackStatus("Trackrt Not available in this name - "+name);
+    }
    }
-   var timeoutId;  
-  
+   //----------------------------------------------------------------------------------------------------------------------
+   var timeoutId;   
    const startTrack=()=> { 
-     timeoutId = setInterval(    () => { componentDidMount();}, 60000*5);
+    setTrackStatus("Tracking Started - "+name);
+     timeoutId = setInterval(    () => { componentDidMount();}, 60000*1);
      console.log("--------------Start------------------")
    }
 
    const stopTrack=()=> { 
     clearInterval(timeoutId);
+    setTrackStatus("Tracking Stopped");
     console.log("--------------Stop------------------")
     storage.remove({
-      key: 'fen'
+      key: 'fence'
     });
    }
    const clearCache=()=> {  
+    setTrackStatus("All Clear");
     setDisableTracker(true); 
     setTrack(false);  
     console.log("--------------Clear Cache------------------")
     storage.remove({
-      key: 'fen'
+      key: 'fence'
     });
    }
 
-
-  
-   
-  const componentDidMount=()=> {    
+  const componentDidMount=()=> {   
+    console.log("--------------start###------------------") 
    setTrack(true);
     storage.load({
-        key: 'fen',
+        key: 'fence',
       autoSync: true,
         syncInBackground: true,   
         syncParams: {
-          extraFetchOptions: {
-            // blahblah
-          },
+          extraFetchOptions: { },
           someFlag: true
         }
     })
     .then(ret => {
       try{
       // found data go to then()
-      console.log("---------yyyy-----------"+JSON.stringify(ret.fence));
+      console.log("---------yyyy-----------"+JSON.stringify(ret));
       var polygonArray ;
-      polygonArray=ret.fence;
+      polygonArray=ret;
       console.log("----------zzz----------"+polygonArray);
       console.log("----------zzz----------"+name);
       navigator.geolocation.getCurrentPosition(
@@ -150,7 +157,9 @@ const VitalScreen = () => {
               console.log('Data added!');
             });
         //alert(inside);
+        setTrackStatus("You are inside your work place");
           }else{
+            setTrackStatus("You are OutSide your work place");
             const db = firebase.firestore();
             var cityRef = db.collection('TrackerData').doc(name);
             var removeCapital = cityRef.update({
@@ -168,14 +177,10 @@ const VitalScreen = () => {
     }).catch(err => {
       setTrack(false);
       readFence();
+      console.log("----- data is not in cache ---------");
     });
   
-    
-   // console.log(JSON.stringify( AsyncStorage.getItem('fence')));
-    
   
-      
-
 	}
   return (
     <Container>
@@ -186,11 +191,11 @@ const VitalScreen = () => {
     <KeyboardAwareContainer>
       <SafeAreaView style={styles.outerContainer}>
         <View style={styles.innerContainer}/>
-		<Text> </Text>
+		<Text style={styles.headerTitle}> {trackStatus}</Text>
     <TextInput
         style={styles.input}
         value={name}
-        onChangeText={name=> setName(name)}
+        onChangeText={name=> setName(name.trim())}
         placeholder="Enter the tracker Id"  
         editable={disableTracker}   
       />
@@ -239,6 +244,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     paddingLeft: 10,
+    alignItems: 'center',
   },
   mainContainer: {
     flex: 1,
@@ -276,6 +282,15 @@ const styles = StyleSheet.create({
     width: '50%',
     backgroundColor:'#000000',
   },
+  baseText: {
+    fontFamily: "Cochin",
+    fontSize: 50,
+    backgroundColor:"#ffffff"
+  },
+  titleText: {
+    fontSize: 20,
+    fontWeight: "bold"
+  }
 });
 
 export default VitalScreen;

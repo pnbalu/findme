@@ -25,8 +25,19 @@ const ChatListScreen = () => {
       var d= JSON.parse(item.data().fenceA)
       afences.push( {name:item.data().name,fence:d.fence});
     })
-    console.log('---------------Fence Data----------' +  JSON.stringify( afences) );   
+    console.log('-------------all --Fence Data----------' +  JSON.stringify( afences) );   
+  
+    var r= {
+      latitude: afences[0].fence[0].latitude,
+      longitude: afences[0].fence[0].longitude,
+      latitudeDelta: 0.009,
+      longitudeDelta: 0.009,
+    } 
+      
+    setRegion(r);
     setAllFences( afences); 
+    console.log('---------------region----------' +  JSON.stringify(r) );    
+    
    }
   //------------------------------------------------------------------------------
   var sssss= {
@@ -88,16 +99,8 @@ const ChatListScreen = () => {
       markers.push(marker);
     });
     state.markers = markers;
-  
-    var r= {
-      latitude: markerr.markers[0].coordinates.latitude,
-      longitude: markerr.markers[0].coordinates.longitude,
-      latitudeDelta: 0.009,
-      longitudeDelta: 0.009,
-    } 
-    setMarkerr(state);   
-    setRegion(r);
-    console.log('---------------region----------' +  JSON.stringify(r) );    
+    
+    setMarkerr(state);      
     console.log('--------------- map ----------' +  JSON.stringify(markerr) );    
   }
   useEffect(() => {
