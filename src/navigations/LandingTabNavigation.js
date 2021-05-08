@@ -30,14 +30,17 @@ const LandingNavigation = () => {
         },
       }}
     >
-     
       <LandingTab.Screen
         name="Tracker"
         component={ReminderScreen}
         options={{
           title: 'Tracker',
           tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="map-marker-multiple" size={30} color={color} />
+            <MaterialCommunityIcons
+              name="map-marker-multiple"
+              size={30}
+              color={color}
+            />
           ),
         }}
       />

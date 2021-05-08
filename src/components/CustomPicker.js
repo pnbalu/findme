@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 
 const CustomPicker = ({ items, value, setValue, placeholder }) => {
+  //console.log(items);
   return (
     <RNPickerSelect
       placeholder={placeholder}
@@ -42,10 +43,10 @@ const pickerSelectStyles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 10,
     borderColor: 'white',
-    backgroundColor: 'white',
+    backgroundColor: 'black',
     borderRadius: 10,
     borderWidth: StyleSheet.hairlineWidth,
-    color: 'black',
+    color: 'white',
     paddingRight: 30,
   },
   inputAndroid: {
