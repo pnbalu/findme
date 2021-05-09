@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView,StyleSheet } from 'react-native';
-import MapView from 'react-native-maps';
+import { SafeAreaView, StyleSheet } from 'react-native';
+import MapView,{ PROVIDER_GOOGLE }  from 'react-native-maps';
 import { firebase } from '../helpers/Firebaseconfig';
 import CustomPicker from '../components/CustomPicker';
+import { LogBox  } from 'react-native';
+
+
+LogBox .ignoreLogs(['Setting a timer']);
 
 const ChatListScreen = () => {
   const [markerr, setMarkerr] = React.useState({
@@ -89,7 +93,7 @@ const ChatListScreen = () => {
   );
 
   const updateFence = fence => {
-   // console.log('-------------------I am select --------' + fence);
+    // console.log('-------------------I am select --------' + fence);
     var r = {
       latitude: fence[0].latitude,
       longitude: fence[0].longitude,
@@ -99,7 +103,6 @@ const ChatListScreen = () => {
     getTrackerData();
     setRegion(r);
     setFence(fence);
-
   };
   const getFences = () => {
     return allFences?.map(item => ({
@@ -109,35 +112,33 @@ const ChatListScreen = () => {
   };
   return (
     <>
-    <SafeAreaView style={styles.container}>
-    <CustomPicker
-        value={fence}
-        setValue={updateFence}
-        placeholder={{}}
-        items={getFences() ?? []}
-      />
-</SafeAreaView>
-    <MapView style={{ flex: 1 }} region={region}>
-      
-
-      {allFences &&
-        allFences.map(polyline => (
-          <MapView.Polygon
-            coordinates={polyline.fence}
-            key={polyline.name}
-            strokeColor="rgba(0, 0, 0, 1)"
-            strokeWidth={3}
-          />
-        ))}
-      {markerr &&
-        markerr.markers.map(m => (
-          <MapView.Marker
-            coordinate={m.coordinates ??{}}
-            title={m.title}
-            key={m.title}
-          />
-        ))}
-    </MapView>
+      <SafeAreaView style={styles.container}>
+        <CustomPicker
+          value={fence}
+          setValue={updateFence}
+          placeholder={{}}
+          items={getFences() ?? []}
+        />
+      </SafeAreaView>
+      <MapView style={{ flex: 1 }} region={region} provider={PROVIDER_GOOGLE}>
+        {allFences &&
+          allFences.map((polyline,index) => (
+            <MapView.Polygon
+              coordinates={polyline.fence}
+              key={index}
+              strokeColor="rgba(0, 0, 0, 1)"
+              strokeWidth={3}
+            />
+          ))}
+        {markerr &&
+          markerr.markers.map((m,index) => (
+            <MapView.Marker
+              coordinate={m.coordinates ?? {}}
+              title={m.title}
+              key={index}
+            />
+          ))}
+      </MapView>
     </>
   );
 };

@@ -22,20 +22,8 @@ const ChatNavigation = () => {
         component={ChatListScreen}
         options={{
           gestureEnabled: false,
-          title: 'My Chats',
-          headerShown: false,
-        }}
-      />
-      <ChatStack.Screen
-        name="AddChat"
-        component={AddChatScreen}
-        options={{ title: 'Contact OMC' }}
-      />
-      <ChatStack.Screen
-        name="ChatDetail"
-        component={ChatDetailScreen}
-        options={{
-          title: 'Chat Detail',
+          title: 'Map',
+          headerShown: true,
         }}
       />
     </ChatStack.Navigator>

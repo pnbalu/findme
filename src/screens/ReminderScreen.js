@@ -14,7 +14,10 @@ import 'firebase/firestore';
 import Storage from 'react-native-storage';
 import KeyboardAwareContainer from '../components/KeyboardAwareContainer';
 import Colors from '../helpers/ColorHelper';
+import { LogBox  } from 'react-native';
 
+
+LogBox .ignoreLogs(['Setting a timer']);
 const storage = new Storage({
   size: 1000,
   storageBackend: AsyncStorage, // for web: window.localStorage
@@ -180,8 +183,11 @@ const VitalScreen = () => {
                 setTrackStatus('You are inside your work place');
               } else {
                 setTrackStatus('You are OutSide your work place');
-                firebase.firestore().collection('TrackerData').doc(name).delete(); 
-                             
+                firebase
+                  .firestore()
+                  .collection('TrackerData')
+                  .doc(name)
+                  .delete();
               }
             },
             error => console.log(error.message),
