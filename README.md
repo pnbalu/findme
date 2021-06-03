@@ -3,7 +3,7 @@
 ## Setup
 
 - Clone the project from `github`
-- Navigate to project folder `omc-mobile` and do `npm install`.
+- Navigate to project folder `findme` and do `npm install`.
 
 ## API end point config
 
